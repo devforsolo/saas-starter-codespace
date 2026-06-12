@@ -12,7 +12,7 @@
    claude
    ```
 4. Claude Code에 구독 계정으로 로그인한 뒤, "START-HERE.md 읽고 시작하자"라고 말하면 됩니다.
-5. 환경 상태가 궁금하면 `pnpm doctor` — 로그인이 덜 된 도구(vercel, supabase)를 짚어 줍니다.
+5. 환경 상태가 궁금하면 `pnpm run doctor` — 로그인이 덜 된 도구(vercel, supabase)를 짚어 줍니다.
 
 ## 알아둘 것
 
