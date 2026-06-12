@@ -17,5 +17,5 @@
 ## 알아둘 것
 
 - 프로젝트 폴더 이름은 `my-service`로 만들어집니다. 바꾸고 싶으면 에이전트에게 부탁하세요.
-- GitHub 무료 계정은 Codespaces를 월 120시간(2코어 기준)까지 무료로 쓸 수 있습니다. 쓰지 않을 때는 Codespace를 Stop 해 두세요.
+- GitHub 무료 계정은 Codespaces를 월 120 코어시간(2코어 머신 기준 60시간)까지 무료로 쓸 수 있습니다. 쓰지 않을 때는 Codespace를 Stop 해 두세요.
 - 이 레포 자체에는 코드가 거의 없습니다 — Codespace를 만들 때 환경을 꾸며 주는 설정(`.devcontainer/`)만 있습니다.
