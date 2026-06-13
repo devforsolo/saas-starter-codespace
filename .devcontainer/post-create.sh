@@ -14,6 +14,14 @@ else
     || echo "⚠ 생성 실패 — 터미널에서 npx -y create-saas-starter-workspace@latest my-service 를 다시 실행하세요."
 fi
 
+echo "▸ GitHub 백업 (내 계정 private 레포 3개로 연결)"
+# 세 레이어(루트·web·mobile)를 내 GitHub 계정의 원격에 연결한다. 멱등·비차단.
+# 코드스페이스 기본 토큰은 레포 생성 권한이 없을 수 있다 — 그럴 땐 connect-repos가
+# "gh auth login 후 다시" 안내를 출력하고, 이후 doctor도 이 미연결을 짚는다.
+if [ -f my-service/scripts/connect-repos.mjs ]; then
+  (cd my-service && node scripts/connect-repos.mjs) || true
+fi
+
 echo ""
 echo "✅ 준비 끝. 아래 순서로 시작하세요 (자세한 안내는 README.md):"
 echo "   1. 터미널에서: cd my-service"
