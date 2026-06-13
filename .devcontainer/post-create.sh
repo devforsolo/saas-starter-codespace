@@ -1,29 +1,34 @@
 #!/bin/bash
-# Codespace 생성 직후 1회 실행 — 도구 설치와 워크스페이스 생성을 자동으로 끝낸다.
-# 실패해도 Codespace 자체는 뜨도록 set -e를 쓰지 않고, 마지막에 상태를 알려준다.
+# Codespace 생성 직후 1회 실행(비대화형). 두 가지만 한다:
+#   1) 공통 도구(pnpm·vercel·eas·sentry)를 미리 설치 — 생성 단계의 대기 시간을 활용한다.
+#   2) 첫 인터랙티브 터미널에서 강의 설치(intake)가 자동 시작되도록 ~/.bashrc에 1회 훅을 심는다.
+#
+# 왜 여기서 직접 워크스페이스를 만들지 않나: post-create는 비대화형이라 인증코드·프로젝트명·에이전트
+# 선택을 물을 수 없다(TTY 없음). 그 대화형 흐름은 로컬과 똑같은 setup.sh가 터미널에서 진행한다 —
+# intake가 한 벌이라 로컬·코드스페이스가 동일한 경험이 된다.
+# 실패해도 Codespace 자체는 뜨도록 set -e를 쓰지 않는다.
 
-echo "▸ 도구 설치 (pnpm·vercel·eas·sentry·Claude Code)"
-npm install -g pnpm@10 vercel eas-cli @sentry/cli >/dev/null 2>&1 || echo "⚠ npm 전역 설치 일부 실패 — 터미널에서 npm install -g pnpm@10 vercel eas-cli @sentry/cli 를 다시 실행하세요."
-curl -fsSL https://claude.ai/install.sh | bash >/dev/null 2>&1 || echo "⚠ Claude Code 설치 실패 — 터미널에서 curl -fsSL https://claude.ai/install.sh | bash 를 다시 실행하세요."
+SETUP_HOST="https://saas-starter-setup.vercel.app"
 
-echo "▸ 워크스페이스 생성 (my-service)"
-if [ -f my-service/workspace.json ]; then
-  echo "  이미 생성되어 있어 건너뜁니다."
-else
-  npx -y create-saas-starter-workspace@latest my-service --agent claude --no-doctor --no-summary \
-    || echo "⚠ 생성 실패 — 터미널에서 npx -y create-saas-starter-workspace@latest my-service 를 다시 실행하세요."
+echo "▸ 공통 도구 미리 설치 (pnpm·vercel·eas·sentry)"
+npm install -g pnpm@10 vercel eas-cli @sentry/cli >/dev/null 2>&1 \
+  || echo "⚠ 일부 도구 설치가 덜 됐습니다 — 다음 단계의 setup이 다시 시도하니 그대로 진행하세요."
+
+# 첫 인터랙티브 터미널에서 setup.sh를 1회 자동 실행한다. setup.sh가 인증코드·프로젝트명·에이전트를 묻고
+# 워크스페이스 생성·서비스 로그인·GitHub 백업·doctor까지 로컬과 동일하게 진행한다.
+# 가드: 인터랙티브 셸일 때만([ -t 1 ]) · 아직 시작 안 했을 때만(sentinel). sentinel을 먼저 만들어
+# 설치 도중 두 번째 터미널을 열어도 재실행되지 않게 한다.
+cat >> "$HOME/.bashrc" <<HOOK
+
+# saas-starter: 첫 터미널에서 강의 설치(intake)를 1회 자동 시작
+if [ -t 1 ] && [ ! -e "$HOME/.config/saas-setup-started" ]; then
+  mkdir -p "$HOME/.config" && touch "$HOME/.config/saas-setup-started"
+  echo ""
+  echo "▸ 강의 개발환경 설치를 시작합니다 (인증코드 → 프로젝트명 → 에이전트 순서로 묻습니다)."
+  curl -fsSL $SETUP_HOST/setup.sh | bash
 fi
-
-echo "▸ GitHub 백업 (내 계정 private 레포 3개로 연결)"
-# 세 레이어(루트·web·mobile)를 내 GitHub 계정의 원격에 연결한다. 멱등·비차단.
-# 코드스페이스 기본 토큰은 레포 생성 권한이 없을 수 있다 — 그럴 땐 connect-repos가
-# "gh auth login 후 다시" 안내를 출력하고, 이후 doctor도 이 미연결을 짚는다.
-if [ -f my-service/scripts/connect-repos.mjs ]; then
-  (cd my-service && node scripts/connect-repos.mjs) || true
-fi
+HOOK
 
 echo ""
-echo "✅ 준비 끝. 아래 순서로 시작하세요 (자세한 안내는 README.md):"
-echo "   1. 터미널에서: cd my-service"
-echo "   2. claude 입력 → 구독 계정으로 로그인"
-echo "   3. 로그인 안 된 도구는 pnpm run doctor 가 알려줍니다 (vercel login, supabase login)"
+echo "✅ 준비 끝. 상단 메뉴 Terminal → New Terminal 로 터미널을 열면 설치가 자동으로 시작됩니다."
+echo "   자동으로 안 뜨면 직접 실행하세요: curl -fsSL $SETUP_HOST/setup.sh | bash"
