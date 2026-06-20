@@ -26,7 +26,7 @@
 
 - 설치 마지막의 **GitHub 백업** 단계에서, 내 작업이 내 계정의 private 레포 3개(`<이름>-workspace`·`<이름>-web`·`<이름>-mobile`)에 올라갑니다. **그때부터는 Codespace가 사라져도 작업이 내 GitHub에 안전합니다** — 이게 클라우드 경로에서 가장 중요한 부분입니다.
 - 백업이 됐는지 `pnpm run doctor`로 확인하세요. (토큰 권한으로 막혔다면 위 *시작하기*의 `gh auth login` 안내를 따르면 됩니다.)
-- 이후 `/go-live` 단계가 그 위에 Vercel·Supabase·Sentry를 붙여 첫 배포까지 잇습니다 — 코드와 서비스가 전부 내 소유의 클라우드에 남습니다.
+- 이후 `/web-launch` 단계가 그 위에 Vercel·Supabase·Sentry·PostHog를 붙여 첫 배포까지 잇습니다 — 코드와 서비스가 전부 내 소유의 클라우드에 남습니다.
 - GitHub은 30일간 쓰지 않은 Codespace를 자동 삭제합니다. 하지만 백업만 돼 있으면 삭제돼도 그 3개 레포에서 다시 시작할 수 있습니다.
 
 ## 알아둘 것
